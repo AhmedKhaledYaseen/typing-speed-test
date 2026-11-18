@@ -36,7 +36,9 @@ export default function PassageDisplay({
   return (
     <div
       onClick={handleContainerClick}
-      className="relative py-8 my-4 border-t border-[#333] w-full min-h-[360px] md:min-h-[440px] cursor-text"
+      className={`relative py-6 md:py-8 my-2 md:my-4 border-t border-[#333] w-full cursor-text ${
+        testState === 'idle' ? 'overflow-hidden max-h-[calc(100vh-240px)]' : 'min-h-[360px] md:min-h-[440px]'
+      }`}
     >
       {/* Hidden input to capture keystrokes on desktop & mobile */}
       <input
@@ -54,7 +56,7 @@ export default function PassageDisplay({
       {/* Passage text with proper wrapping */}
       <div
         className={`font-mono text-[20px] md:text-[34px] leading-[38px] md:leading-[55px] select-none break-words whitespace-pre-wrap ${
-          testState === 'idle' ? 'blur-[5.5px] opacity-60' : ''
+          testState === 'idle' ? 'blur-[5.5px] opacity-60 overflow-hidden' : ''
         }`}
       >
         {passage.split('').map((char, i) => (

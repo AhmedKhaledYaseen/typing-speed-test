@@ -111,14 +111,16 @@ function App() {
   }, [difficulty, resetTest, resetTimer])
 
   return (
-    <div className="min-h-screen bg-[#111] text-white flex flex-col items-center relative overflow-x-hidden">
-      <div className="w-full max-w-[1216px] px-4 sm:px-6 md:px-8 py-4 md:py-6 flex flex-col flex-1 z-10">
+    <div className={`bg-[#111] text-white flex flex-col items-center relative overflow-x-hidden ${
+      testState === 'idle' ? 'h-screen overflow-y-hidden' : 'min-h-screen'
+    }`}>
+      <div className="w-full max-w-[1216px] px-4 sm:px-6 md:px-8 py-3 md:py-5 flex flex-col flex-1 z-10">
         <Header personalBest={personalBest} />
 
         {testState !== 'complete' ? (
-          <main className="flex-1 flex flex-col w-full">
+          <main className="flex-1 flex flex-col w-full overflow-hidden">
             {/* Stats + Controls row */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 my-2">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 my-1 md:my-2 shrink-0">
               <div className="flex-1">
                 <StatsBar wpm={wpm} accuracy={accuracy} time={timeDisplay} />
               </div>
