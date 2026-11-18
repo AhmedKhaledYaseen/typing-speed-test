@@ -7,6 +7,7 @@ import RestartButton from './components/RestartButton'
 import ResultsScreen from './components/ResultsScreen'
 import { passages } from './data/passages'
 import { useTypingTest } from './hooks/useTypingTest'
+import { useTimer } from './hooks/useTimer'
 
 function getRandomPassage(diff) {
   const list = passages[diff] || passages.hard
@@ -26,41 +27,60 @@ function App() {
     testState,
     setTestState,
     startTest,
+    completeTest,
     resetTest,
     handleKeyDown,
   } = useTypingTest(currentPassage)
 
-  // Switch difficulty -> get new random passage and reset test
+  // Timer hook
+  const {
+    elapsedSeconds,
+    timeDisplay,
+    resetTimer,
+  } = useTimer(mode, testState === 'running', completeTest)
+
+  // Switch difficulty -> new random passage + reset test & timer
   const handleDifficultyChange = useCallback((newDiff) => {
     setDifficulty(newDiff)
     const newP = getRandomPassage(newDiff)
     setCurrentPassage(newP)
     resetTest()
-  }, [resetTest])
+    resetTimer()
+  }, [resetTest, resetTimer])
 
-  // Switch mode -> reset test
+  // Switch mode -> reset test & timer
   const handleModeChange = useCallback((newMode) => {
     setMode(newMode)
     resetTest()
-  }, [resetTest])
+    resetTimer()
+  }, [resetTest, resetTimer])
 
   // Restart current test
   const handleRestart = useCallback(() => {
     const newP = getRandomPassage(difficulty)
     setCurrentPassage(newP)
     resetTest()
-  }, [difficulty, resetTest])
+    resetTimer()
+  }, [difficulty, resetTest, resetTimer])
 
-  // Accuracy calculation (guarded against divide by 0)
+  // Real-time Accuracy calculation
   const accuracy = useMemo(() => {
     if (totalKeystrokes === 0) return 100
     const correctKeystrokes = Math.max(0, totalKeystrokes - errorCount)
     return Math.max(0, Math.round((correctKeystrokes / totalKeystrokes) * 100))
   }, [totalKeystrokes, errorCount])
 
+  // Correct characters count
   const correctCharsCount = useMemo(() => {
     return typedChars.filter(c => c.status === 'correct').length
   }, [typedChars])
+
+  // Real-time WPM calculation
+  const wpm = useMemo(() => {
+    if (elapsedSeconds <= 0 || correctCharsCount === 0) return 0
+    const minutes = elapsedSeconds / 60
+    return Math.round((correctCharsCount / 5) / minutes)
+  }, [elapsedSeconds, correctCharsCount])
 
   return (
     <div className="min-h-screen bg-[#111] text-white flex flex-col items-center relative overflow-x-hidden">
@@ -72,7 +92,7 @@ function App() {
             {/* Stats + Controls row */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 my-2">
               <div className="flex-1">
-                <StatsBar wpm={0} accuracy={accuracy} time={mode === 'timed' ? '0:60' : '0:00'} />
+                <StatsBar wpm={wpm} accuracy={accuracy} time={timeDisplay} />
               </div>
               <div className="shrink-0">
                 <Controls
@@ -102,7 +122,7 @@ function App() {
           <main className="flex-1 flex flex-col items-center justify-center w-full py-4 pb-20">
             <ResultsScreen
               resultType="normal"
-              wpm={0}
+              wpm={wpm}
               accuracy={accuracy}
               correctChars={correctCharsCount}
               incorrectChars={errorCount}
