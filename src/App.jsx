@@ -15,11 +15,11 @@ function App() {
   const [mode, setMode] = useState('timed')
 
   return (
-    <div className="min-h-screen bg-[#111] text-white flex flex-col items-center overflow-x-hidden">
-      <div className="w-full max-w-[1216px] px-4 sm:px-6 md:px-8 py-4 md:py-6 flex flex-col flex-1">
-        <Header personalBest={92} />
+    <div className="min-h-screen bg-[#111] text-white flex flex-col items-center relative overflow-x-hidden">
+      <div className="w-full max-w-[1216px] px-4 sm:px-6 md:px-8 py-4 md:py-6 flex flex-col flex-1 z-10">
+        <Header personalBest={testState === 'complete' ? 95 : 92} />
 
-        {testState !== 'complete' && (
+        {testState !== 'complete' ? (
           <main className="flex-1 flex flex-col w-full">
             {/* Stats + Controls row (desktop) / stacked (mobile) */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 my-2">
@@ -50,10 +50,8 @@ function App() {
               <RestartButton onRestart={() => setTestState('idle')} />
             )}
           </main>
-        )}
-
-        {testState === 'complete' && (
-          <main className="flex-1 flex flex-col items-center justify-center w-full">
+        ) : (
+          <main className="flex-1 flex flex-col items-center justify-center w-full py-4 pb-20">
             <ResultsScreen
               resultType="newPB"
               wpm={95}
@@ -65,6 +63,15 @@ function App() {
           </main>
         )}
       </div>
+
+      {/* Confetti anchored cleanly at the bottom edge */}
+      {testState === 'complete' && (
+        <img
+          src="/assets/images/pattern-confetti.svg"
+          alt=""
+          className="fixed bottom-0 left-0 right-0 w-full pointer-events-none z-0 object-cover max-h-[140px] md:max-h-[180px]"
+        />
+      )}
 
       {/* Dev shortcut to test states */}
       <div className="fixed bottom-4 right-4 flex gap-2 z-50 bg-[#222]/80 backdrop-blur p-1 rounded-lg border border-[#444]">
