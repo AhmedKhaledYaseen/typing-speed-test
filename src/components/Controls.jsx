@@ -24,7 +24,7 @@ export default function Controls({ difficulty, mode, onDifficultyChange, onModeC
   const currentModeLabel = MODES.find(m => m.value === mode)?.label || mode
 
   return (
-    <div ref={containerRef} className="w-full relative">
+    <div ref={containerRef} className="w-full relative shrink-0">
       {/* Mobile: Interactive dropdown triggers + custom radio menus */}
       <div className="flex md:hidden gap-3 py-2">
         {/* Difficulty trigger */}
@@ -104,16 +104,16 @@ export default function Controls({ difficulty, mode, onDifficultyChange, onModeC
         </div>
       </div>
 
-      {/* Desktop: Pill buttons matching Figma */}
-      <div className="hidden md:flex items-center gap-2">
-        <span className="text-[#999] text-[16px] mr-2">Difficulty:</span>
+      {/* Desktop: Pill buttons matching Figma - with shrink-0 so they never clip */}
+      <div className="hidden md:flex items-center gap-1.5 lg:gap-2 shrink-0">
+        <span className="text-[#999] text-[15px] lg:text-[16px] mr-1 lg:mr-2 shrink-0">Difficulty:</span>
         {DIFFICULTIES.map(d => {
           const isActive = difficulty === d
           return (
             <button
               key={d}
               onClick={() => onDifficultyChange(d)}
-              className={`h-[31px] px-2.5 rounded-[7px] border border-solid text-[16px] cursor-pointer transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-[#589ed6] ${
+              className={`h-[31px] px-2.5 lg:px-3 rounded-[7px] border border-solid text-[15px] lg:text-[16px] cursor-pointer transition-colors whitespace-nowrap shrink-0 focus:outline-none focus:ring-2 focus:ring-[#589ed6] ${
                 isActive
                   ? 'border-[#589ed6] text-[#589ed6] bg-[#111]'
                   : 'border-[#444] text-white bg-[#111] hover:border-[#589ed6] hover:text-[#589ed6]'
@@ -124,16 +124,16 @@ export default function Controls({ difficulty, mode, onDifficultyChange, onModeC
           )
         })}
 
-        <div className="bg-[#333] w-px h-[31px] mx-3" />
+        <div className="bg-[#333] w-px h-[28px] lg:h-[31px] mx-2 lg:mx-3 shrink-0" />
 
-        <span className="text-[#999] text-[16px] mr-2">Mode:</span>
+        <span className="text-[#999] text-[15px] lg:text-[16px] mr-1 lg:mr-2 shrink-0">Mode:</span>
         {MODES.map(m => {
           const isActive = mode === m.value
           return (
             <button
               key={m.value}
               onClick={() => onModeChange(m.value)}
-              className={`h-[31px] px-2.5 rounded-[7px] border border-solid text-[16px] cursor-pointer transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-[#589ed6] ${
+              className={`h-[31px] px-2.5 lg:px-3 rounded-[7px] border border-solid text-[15px] lg:text-[16px] cursor-pointer transition-colors whitespace-nowrap shrink-0 focus:outline-none focus:ring-2 focus:ring-[#589ed6] ${
                 isActive
                   ? 'border-[#589ed6] text-[#589ed6] bg-[#111]'
                   : 'border-[#444] text-white bg-[#111] hover:border-[#589ed6] hover:text-[#589ed6]'

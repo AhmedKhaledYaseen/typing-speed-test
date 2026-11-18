@@ -118,10 +118,10 @@ function App() {
         <Header personalBest={personalBest} />
 
         {testState !== 'complete' ? (
-          <main className="flex-1 flex flex-col w-full overflow-hidden">
+          <main className="flex-1 flex flex-col w-full">
             {/* Stats + Controls row */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 my-1 md:my-2 shrink-0">
-              <div className="flex-1">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 my-1 md:my-2">
+              <div className="shrink-0">
                 <StatsBar wpm={wpm} accuracy={accuracy} time={timeDisplay} />
               </div>
               <div className="shrink-0">
