@@ -74,7 +74,6 @@ describe('useTypingTest hook', () => {
     expect(result.current.typedChars).toEqual([])
     // Error count must NOT decrease!
     expect(result.current.errorCount).toBe(1)
-    expect(result.current.totalKeystrokes).toBe(2)
   })
 
   it('completes test when full passage has been typed', () => {

@@ -9,6 +9,7 @@ import { passages } from './data/passages'
 import { useTypingTest } from './hooks/useTypingTest'
 import { useTimer } from './hooks/useTimer'
 import { usePersonalBest } from './hooks/usePersonalBest'
+import { calculateWpm, calculateAccuracy } from './utils/calculations'
 
 function getRandomPassage(diff) {
   const list = passages[diff] || passages.hard
@@ -30,20 +31,12 @@ function App() {
     typedChars,
     cursorIndex,
     errorCount,
-    totalKeystrokes,
     testState,
     startTest,
     completeTest,
     resetTest,
     handleKeyDown,
   } = useTypingTest(currentPassage)
-
-  // Real-time Accuracy
-  const accuracy = useMemo(() => {
-    if (totalKeystrokes === 0) return 100
-    const correctKeystrokes = Math.max(0, totalKeystrokes - errorCount)
-    return Math.max(0, Math.round((correctKeystrokes / totalKeystrokes) * 100))
-  }, [totalKeystrokes, errorCount])
 
   // Correct characters count
   const correctCharsCount = useMemo(() => {
@@ -57,32 +50,20 @@ function App() {
     resetTimer,
   } = useTimer(mode, testState === 'running', completeTest)
 
+  // Real-time Accuracy using official formula
+  const accuracy = useMemo(() => {
+    return calculateAccuracy(correctCharsCount, errorCount)
+  }, [correctCharsCount, errorCount])
+
   // Real-time WPM
   const wpm = useMemo(() => {
-    if (elapsedSeconds <= 0 || correctCharsCount === 0) return 0
-    const minutes = elapsedSeconds / 60
-    return Math.round((correctCharsCount / 5) / minutes)
-  }, [elapsedSeconds, correctCharsCount])
+    return calculateWpm(correctCharsCount, elapsedSeconds)
+  }, [correctCharsCount, elapsedSeconds])
 
-  // Final stats snapshot for results screen
-  const [finalStats, setFinalStats] = useState({
-    wpm: 0,
-    accuracy: 100,
-    correctChars: 0,
-    incorrectChars: 0,
-  })
-
-  // Snapshot stats when test completes
+  // Record score when test completes
   useEffect(() => {
     if (testState === 'complete') {
-      const recordedWpm = wpm
-      setFinalStats({
-        wpm: recordedWpm,
-        accuracy,
-        correctChars: correctCharsCount,
-        incorrectChars: errorCount,
-      })
-      recordResult(recordedWpm)
+      recordResult(wpm)
     }
   }, [testState]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -152,10 +133,10 @@ function App() {
           <main className="flex-1 flex flex-col items-center justify-center w-full py-4 pb-20">
             <ResultsScreen
               resultType={resultType}
-              wpm={finalStats.wpm}
-              accuracy={finalStats.accuracy}
-              correctChars={finalStats.correctChars}
-              incorrectChars={finalStats.incorrectChars}
+              wpm={wpm}
+              accuracy={accuracy}
+              correctChars={correctCharsCount}
+              incorrectChars={errorCount}
               onGoAgain={handleRestart}
             />
           </main>

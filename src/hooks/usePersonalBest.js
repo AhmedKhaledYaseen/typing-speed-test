@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 
 const STORAGE_KEY = 'typingSpeedTest_personalBest'
 
@@ -13,32 +13,35 @@ export function usePersonalBest() {
   })
 
   const [resultType, setResultType] = useState('normal') // 'baseline' | 'newPB' | 'normal'
+  const personalBestRef = useRef(personalBest)
+  useEffect(() => {
+    personalBestRef.current = personalBest
+  }, [personalBest])
 
   const recordResult = useCallback((currentWpm) => {
-    setPersonalBest(prevBest => {
-      let type = 'normal'
-      let nextBest = prevBest
+    const prevBest = personalBestRef.current
+    let type = 'normal'
+    let nextBest = prevBest
 
-      if (prevBest === null) {
-        type = 'baseline'
-        nextBest = currentWpm
-      } else if (currentWpm > prevBest) {
-        type = 'newPB'
-        nextBest = currentWpm
-      } else {
-        type = 'normal'
-      }
+    if (prevBest === null) {
+      type = 'baseline'
+      nextBest = currentWpm
+    } else if (currentWpm > prevBest) {
+      type = 'newPB'
+      nextBest = currentWpm
+    } else {
+      type = 'normal'
+    }
 
-      setResultType(type)
+    personalBestRef.current = nextBest
+    setPersonalBest(nextBest)
+    setResultType(type)
 
-      try {
-        localStorage.setItem(STORAGE_KEY, String(nextBest))
-      } catch {
-        // Ignore localStorage errors
-      }
-
-      return nextBest
-    })
+    try {
+      localStorage.setItem(STORAGE_KEY, String(nextBest))
+    } catch {
+      // Ignore localStorage write failures
+    }
   }, [])
 
   return {
@@ -47,3 +50,4 @@ export function usePersonalBest() {
     recordResult,
   }
 }
+

@@ -19,6 +19,17 @@ export function useTimer(mode, isRunning, onComplete) {
     resetTimer()
   }, [mode, resetTimer])
 
+  // Handle completion outside setState updater
+  useEffect(() => {
+    if (isRunning && mode === 'timed' && seconds === 0) {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
+      onComplete?.()
+    }
+  }, [seconds, isRunning, mode, onComplete])
+
   // Timer tick effect
   useEffect(() => {
     if (!isRunning) {
@@ -32,13 +43,7 @@ export function useTimer(mode, isRunning, onComplete) {
     timerRef.current = setInterval(() => {
       setSeconds(prev => {
         if (mode === 'timed') {
-          if (prev <= 1) {
-            clearInterval(timerRef.current)
-            timerRef.current = null
-            onComplete?.()
-            return 0
-          }
-          return prev - 1
+          return Math.max(0, prev - 1)
         } else {
           return prev + 1
         }
@@ -51,7 +56,7 @@ export function useTimer(mode, isRunning, onComplete) {
         timerRef.current = null
       }
     }
-  }, [isRunning, mode, onComplete])
+  }, [isRunning, mode])
 
   // Calculate elapsed seconds for WPM formula
   const elapsedSeconds = mode === 'timed' ? (60 - seconds) : seconds

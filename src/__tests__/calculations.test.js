@@ -1,18 +1,7 @@
 import { describe, it, expect } from 'vitest'
+import { calculateWpm, calculateAccuracy } from '../utils/calculations'
 
-function calculateWpm(correctChars, elapsedSeconds) {
-  if (elapsedSeconds <= 0 || correctChars === 0) return 0
-  const minutes = elapsedSeconds / 60
-  return Math.round((correctChars / 5) / minutes)
-}
-
-function calculateAccuracy(totalKeystrokes, errorCount) {
-  if (totalKeystrokes === 0) return 100
-  const correctKeystrokes = Math.max(0, totalKeystrokes - errorCount)
-  return Math.max(0, Math.round((correctKeystrokes / totalKeystrokes) * 100))
-}
-
-describe('WPM and Accuracy Calculations', () => {
+describe('WPM and Accuracy Calculations (Production)', () => {
   it('returns 0 WPM when elapsed seconds is 0 (prevents NaN / Infinity)', () => {
     expect(calculateWpm(0, 0)).toBe(0)
     expect(calculateWpm(25, 0)).toBe(0)
@@ -32,15 +21,16 @@ describe('WPM and Accuracy Calculations', () => {
   })
 
   it('calculates accuracy accurately with errors', () => {
-    // 100 keystrokes, 10 errors = 90%
-    expect(calculateAccuracy(100, 10)).toBe(90)
-    // 50 keystrokes, 5 errors = 90%
-    expect(calculateAccuracy(50, 5)).toBe(90)
-    // 10 keystrokes, 0 errors = 100%
+    // 90 correct, 10 errors = 90%
+    expect(calculateAccuracy(90, 10)).toBe(90)
+    // 45 correct, 5 errors = 90%
+    expect(calculateAccuracy(45, 5)).toBe(90)
+    // 10 correct, 0 errors = 100%
     expect(calculateAccuracy(10, 0)).toBe(100)
   })
 
-  it('never returns negative accuracy even if errorCount exceeds totalKeystrokes', () => {
-    expect(calculateAccuracy(5, 10)).toBe(0)
+  it('does not inflate accuracy when backspacing mistakes', () => {
+    // 5 correct, 5 errors = 50%
+    expect(calculateAccuracy(5, 5)).toBe(50)
   })
 })

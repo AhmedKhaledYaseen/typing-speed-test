@@ -11,9 +11,6 @@ export default function PassageDisplay({
   const inputRef = useRef(null)
 
   const handleContainerClick = () => {
-    if (testState === 'idle') {
-      onStart()
-    }
     inputRef.current?.focus()
   }
 
@@ -53,9 +50,9 @@ export default function PassageDisplay({
         aria-label="Typing input"
       />
 
-      {/* Passage text with proper wrapping */}
+      {/* Passage text using project's Sora font */}
       <div
-        className={`font-mono text-[20px] md:text-[34px] leading-[38px] md:leading-[55px] select-none break-words whitespace-pre-wrap ${
+        className={`text-[20px] md:text-[32px] leading-[38px] md:leading-[55px] font-normal select-none break-words whitespace-pre-wrap ${
           testState === 'idle' ? 'blur-[5.5px] opacity-60 overflow-hidden' : ''
         }`}
       >

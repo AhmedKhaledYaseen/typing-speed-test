@@ -50,8 +50,7 @@ export function useTypingTest(passage = '') {
         cursorRef.current -= 1
         setCursorIndex(cursorRef.current)
         setTypedChars(prev => prev.slice(0, -1))
-        setTotalKeystrokes(prev => prev + 1)
-        // Note: errorCount is NEVER decremented!
+        // Backspace does NOT increment totalKeystrokes or decrement errorCount
       }
       return
     }
