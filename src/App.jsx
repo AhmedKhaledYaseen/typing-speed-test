@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import Header from './components/Header'
 import StatsBar from './components/StatsBar'
 import Controls from './components/Controls'
@@ -8,6 +8,7 @@ import ResultsScreen from './components/ResultsScreen'
 import { passages } from './data/passages'
 import { useTypingTest } from './hooks/useTypingTest'
 import { useTimer } from './hooks/useTimer'
+import { usePersonalBest } from './hooks/usePersonalBest'
 
 function getRandomPassage(diff) {
   const list = passages[diff] || passages.hard
@@ -20,17 +21,34 @@ function App() {
   const [currentPassage, setCurrentPassage] = useState(() => getRandomPassage('hard'))
 
   const {
+    personalBest,
+    resultType,
+    recordResult,
+  } = usePersonalBest()
+
+  const {
     typedChars,
     cursorIndex,
     errorCount,
     totalKeystrokes,
     testState,
-    setTestState,
     startTest,
     completeTest,
     resetTest,
     handleKeyDown,
   } = useTypingTest(currentPassage)
+
+  // Real-time Accuracy
+  const accuracy = useMemo(() => {
+    if (totalKeystrokes === 0) return 100
+    const correctKeystrokes = Math.max(0, totalKeystrokes - errorCount)
+    return Math.max(0, Math.round((correctKeystrokes / totalKeystrokes) * 100))
+  }, [totalKeystrokes, errorCount])
+
+  // Correct characters count
+  const correctCharsCount = useMemo(() => {
+    return typedChars.filter(c => c.status === 'correct').length
+  }, [typedChars])
 
   // Timer hook
   const {
@@ -39,7 +57,36 @@ function App() {
     resetTimer,
   } = useTimer(mode, testState === 'running', completeTest)
 
-  // Switch difficulty -> new random passage + reset test & timer
+  // Real-time WPM
+  const wpm = useMemo(() => {
+    if (elapsedSeconds <= 0 || correctCharsCount === 0) return 0
+    const minutes = elapsedSeconds / 60
+    return Math.round((correctCharsCount / 5) / minutes)
+  }, [elapsedSeconds, correctCharsCount])
+
+  // Final stats snapshot for results screen
+  const [finalStats, setFinalStats] = useState({
+    wpm: 0,
+    accuracy: 100,
+    correctChars: 0,
+    incorrectChars: 0,
+  })
+
+  // Snapshot stats when test completes
+  useEffect(() => {
+    if (testState === 'complete') {
+      const recordedWpm = wpm
+      setFinalStats({
+        wpm: recordedWpm,
+        accuracy,
+        correctChars: correctCharsCount,
+        incorrectChars: errorCount,
+      })
+      recordResult(recordedWpm)
+    }
+  }, [testState]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Switch difficulty -> new random passage + reset
   const handleDifficultyChange = useCallback((newDiff) => {
     setDifficulty(newDiff)
     const newP = getRandomPassage(newDiff)
@@ -55,7 +102,7 @@ function App() {
     resetTimer()
   }, [resetTest, resetTimer])
 
-  // Restart current test
+  // Restart / Go again
   const handleRestart = useCallback(() => {
     const newP = getRandomPassage(difficulty)
     setCurrentPassage(newP)
@@ -63,29 +110,10 @@ function App() {
     resetTimer()
   }, [difficulty, resetTest, resetTimer])
 
-  // Real-time Accuracy calculation
-  const accuracy = useMemo(() => {
-    if (totalKeystrokes === 0) return 100
-    const correctKeystrokes = Math.max(0, totalKeystrokes - errorCount)
-    return Math.max(0, Math.round((correctKeystrokes / totalKeystrokes) * 100))
-  }, [totalKeystrokes, errorCount])
-
-  // Correct characters count
-  const correctCharsCount = useMemo(() => {
-    return typedChars.filter(c => c.status === 'correct').length
-  }, [typedChars])
-
-  // Real-time WPM calculation
-  const wpm = useMemo(() => {
-    if (elapsedSeconds <= 0 || correctCharsCount === 0) return 0
-    const minutes = elapsedSeconds / 60
-    return Math.round((correctCharsCount / 5) / minutes)
-  }, [elapsedSeconds, correctCharsCount])
-
   return (
     <div className="min-h-screen bg-[#111] text-white flex flex-col items-center relative overflow-x-hidden">
       <div className="w-full max-w-[1216px] px-4 sm:px-6 md:px-8 py-4 md:py-6 flex flex-col flex-1 z-10">
-        <Header personalBest={92} />
+        <Header personalBest={personalBest} />
 
         {testState !== 'complete' ? (
           <main className="flex-1 flex flex-col w-full">
@@ -121,32 +149,25 @@ function App() {
         ) : (
           <main className="flex-1 flex flex-col items-center justify-center w-full py-4 pb-20">
             <ResultsScreen
-              resultType="normal"
-              wpm={wpm}
-              accuracy={accuracy}
-              correctChars={correctCharsCount}
-              incorrectChars={errorCount}
+              resultType={resultType}
+              wpm={finalStats.wpm}
+              accuracy={finalStats.accuracy}
+              correctChars={finalStats.correctChars}
+              incorrectChars={finalStats.incorrectChars}
               onGoAgain={handleRestart}
             />
           </main>
         )}
       </div>
 
-      {/* Confetti on complete */}
-      {testState === 'complete' && (
+      {/* Confetti only shown on new PB */}
+      {testState === 'complete' && resultType === 'newPB' && (
         <img
           src="/assets/images/pattern-confetti.svg"
           alt=""
           className="fixed bottom-0 left-0 right-0 w-full pointer-events-none z-0 object-cover max-h-[140px] md:max-h-[180px]"
         />
       )}
-
-      {/* State debugging toggle */}
-      <div className="fixed bottom-4 right-4 flex gap-2 z-50 bg-[#222]/80 backdrop-blur p-1 rounded-lg border border-[#444]">
-        <button onClick={() => setTestState('idle')} className="bg-[#333] hover:bg-[#444] text-white px-3 py-1 text-xs rounded">idle</button>
-        <button onClick={() => setTestState('running')} className="bg-[#333] hover:bg-[#444] text-white px-3 py-1 text-xs rounded">running</button>
-        <button onClick={() => setTestState('complete')} className="bg-[#333] hover:bg-[#444] text-white px-3 py-1 text-xs rounded">complete</button>
-      </div>
     </div>
   )
 }
