@@ -36,7 +36,7 @@ export default function PassageDisplay({
   return (
     <div
       onClick={handleContainerClick}
-      className="relative py-8 my-4 border-t border-[#333] w-full cursor-text"
+      className="relative py-8 my-4 border-t border-[#333] w-full min-h-[360px] md:min-h-[440px] cursor-text"
     >
       {/* Hidden input to capture keystrokes on desktop & mobile */}
       <input
@@ -67,22 +67,25 @@ export default function PassageDisplay({
         ))}
       </div>
 
-      {/* Idle overlay - perfectly centered */}
+      {/* Idle overlay - anchored to exact center of the page */}
       {testState === 'idle' && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-10">
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onStart()
-              inputRef.current?.focus()
-            }}
-            className="bg-[#4da8ff] text-white font-semibold text-[20px] rounded-[12px] px-8 h-[56px] hover:bg-[hsl(210,100%,65%)] transition-colors focus:outline-none focus:ring-2 focus:ring-[#589ed6] cursor-pointer shadow-lg"
-          >
-            Start Typing Test
-          </button>
-          <p className="text-white font-semibold text-[18px] md:text-[20px] mt-4">
-            Or click the text and start typing
-          </p>
+        <div className="fixed inset-0 flex flex-col items-center justify-center text-center p-4 z-20 pointer-events-none">
+          <div className="pointer-events-auto flex flex-col items-center">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                onStart()
+                inputRef.current?.focus()
+              }}
+              className="bg-[#4da8ff] text-white font-semibold text-[20px] rounded-[12px] px-8 h-[56px] hover:bg-[hsl(210,100%,65%)] transition-colors focus:outline-none focus:ring-2 focus:ring-[#589ed6] cursor-pointer shadow-2xl"
+            >
+              Start Typing Test
+            </button>
+            <p className="text-white font-semibold text-[18px] md:text-[20px] mt-4 drop-shadow">
+              Or click the text and start typing
+            </p>
+          </div>
         </div>
       )}
     </div>
