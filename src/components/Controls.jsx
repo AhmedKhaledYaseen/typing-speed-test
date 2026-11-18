@@ -10,7 +10,7 @@ const MODES = [
 
 export default function Controls({ difficulty, mode, onDifficultyChange, onModeChange }) {
   // Pill button classes
-  const pillBase = 'h-[31px] px-2 rounded-[7px] border border-solid text-[16px] cursor-pointer transition-colors'
+  const pillBase = 'h-[31px] px-2.5 rounded-[7px] border border-solid text-[16px] cursor-pointer transition-colors whitespace-nowrap'
   const pillActive = 'border-[#589ed6] text-[#589ed6] bg-[#111]'
   const pillInactive = 'border-[#666] text-white bg-[#111] hover:border-[#589ed6] hover:text-[#589ed6]'
 
@@ -18,9 +18,9 @@ export default function Controls({ difficulty, mode, onDifficultyChange, onModeC
   const dropdownBase = 'flex items-center justify-between gap-2 h-[42px] px-4 rounded-full border border-[#444] bg-[#111] text-white text-[16px] cursor-pointer appearance-none'
 
   return (
-    <div className="px-7 md:px-14">
+    <div className="w-full">
       {/* Mobile: 2 dropdowns */}
-      <div className="flex md:hidden gap-3 py-3">
+      <div className="flex md:hidden gap-3 py-2">
         <div className="relative flex-1">
           <select
             value={difficulty}

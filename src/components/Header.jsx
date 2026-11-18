@@ -2,7 +2,7 @@
 // Props: personalBest (number | null)
 export default function Header({ personalBest }) {
   return (
-    <header className="flex items-center justify-between px-7 py-5 md:px-14 md:py-7">
+    <header className="flex items-center justify-between py-4 md:py-6 w-full">
       {/* Logo */}
       <div className="flex items-center gap-2.5">
         {/* Mobile logo */}

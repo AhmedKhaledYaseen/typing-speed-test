@@ -5,9 +5,9 @@ export default function StatsBar({ wpm, accuracy, time }) {
   const timeColor = 'text-[hsl(49,85%,70%)]'
 
   return (
-    <div className="px-7 md:px-14">
+    <div className="w-full">
       {/* Mobile: 3-col grid */}
-      <div className="grid grid-cols-3 md:hidden gap-4 py-3">
+      <div className="grid grid-cols-3 md:hidden gap-4 py-2">
         <div>
           <p className="text-[#999] text-sm">WPM:</p>
           <p className="text-white font-bold text-3xl">{wpm}</p>
@@ -23,7 +23,7 @@ export default function StatsBar({ wpm, accuracy, time }) {
       </div>
 
       {/* Desktop: single row */}
-      <div className="hidden md:flex items-center gap-0 py-3">
+      <div className="hidden md:flex items-center gap-0 py-2">
         <span className="text-[#999] text-[20px]">WPM:</span>
         <span className="text-white font-bold text-[25px] ml-4">{wpm}</span>
         <div className="bg-[#333] w-px h-[26px] mx-7" />

@@ -27,14 +27,11 @@ export default function PassageDisplay({
   }
 
   return (
-    <div className="relative px-7 md:px-14 py-6">
-      {/* Separator line */}
-      <div className="absolute top-0 left-7 right-7 md:left-14 md:right-14 h-px bg-[#333]" />
-
-      {/* Passage text */}
+    <div className="relative py-8 my-4 border-t border-[#333] w-full">
+      {/* Passage text with proper wrapping */}
       <div
-        className={`font-mono text-[22px] md:text-[35px] leading-[40px] md:leading-[55px] select-none
-          ${testState === 'idle' ? 'blur-[5.5px] opacity-57 pointer-events-none' : ''}`}
+        className={`font-mono text-[20px] md:text-[34px] leading-[38px] md:leading-[55px] select-none break-words whitespace-pre-wrap
+          ${testState === 'idle' ? 'blur-[5.5px] opacity-60 pointer-events-none' : ''}`}
         onClick={testState === 'idle' ? onStart : undefined}
       >
         {passage.split('').map((char, i) => (
@@ -42,30 +39,23 @@ export default function PassageDisplay({
             {i === cursorIndex && testState === 'running' && (
               <span className="cursor-blink" />
             )}
-            {char === ' ' ? '\u00A0' : char}
+            {char}
           </span>
         ))}
       </div>
 
-      {/* Idle overlay */}
+      {/* Idle overlay - perfectly centered */}
       {testState === 'idle' && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-5">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-10">
           <button
             onClick={onStart}
-            className="bg-[#4da8ff] text-white font-semibold text-[20px] rounded-[12px] px-8 h-[56px] hover:bg-[hsl(210,100%,65%)] transition-colors focus:outline-none focus:ring-2 focus:ring-[#589ed6]"
+            className="bg-[#4da8ff] text-white font-semibold text-[20px] rounded-[12px] px-8 h-[56px] hover:bg-[hsl(210,100%,65%)] transition-colors focus:outline-none focus:ring-2 focus:ring-[#589ed6] cursor-pointer shadow-lg"
           >
             Start Typing Test
           </button>
-          <p className="text-white font-semibold text-[20px]">
+          <p className="text-white font-semibold text-[18px] md:text-[20px] mt-4">
             Or click the text and start typing
           </p>
-        </div>
-      )}
-
-      {/* Restart button (running/complete) */}
-      {testState === 'running' && (
-        <div className="mt-8 flex justify-center">
-          <div className="w-full h-px bg-[#333] mb-8" />
         </div>
       )}
     </div>

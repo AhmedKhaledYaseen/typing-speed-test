@@ -7,7 +7,7 @@ import RestartButton from './components/RestartButton'
 import ResultsScreen from './components/ResultsScreen'
 
 // Hardcoded placeholder data for Task 2 (layout verification)
-const PLACEHOLDER_PASSAGE = "The archaeological expedition unearthed artifacts that complicated prevailing theories about Bronze Age trade networks. Obsidian from Anatolia, lapis lazuli from Afghanistan, and amber from the Baltic—all discovered in a single Mycenaean tomb."
+const PLACEHOLDER_PASSAGE = "The archaeological expedition unearthed artifacts that complicated prevailing theories about Bronze Age trade networks. Obsidian from Anatolia, lapis lazuli from Afghanistan, and amber from the Baltic—all discovered in a single Mycenaean tomb—suggested commercial connections far more extensive than previously hypothesized. \"We've underestimated ancient peoples' navigational capabilities and their appetite for luxury goods,\" the lead researcher observed. \"Globalization isn't as modern as we assume.\""
 
 function App() {
   const [testState, setTestState] = useState('idle') // 'idle' | 'running' | 'complete'
@@ -15,58 +15,62 @@ function App() {
   const [mode, setMode] = useState('timed')
 
   return (
-    <div className="min-h-screen bg-[#111] flex flex-col">
-      <Header personalBest={92} />
+    <div className="min-h-screen bg-[#111] text-white flex flex-col items-center overflow-x-hidden">
+      <div className="w-full max-w-[1216px] px-4 sm:px-6 md:px-8 py-4 md:py-6 flex flex-col flex-1">
+        <Header personalBest={92} />
 
-      {testState !== 'complete' && (
-        <>
-          {/* Stats + Controls row (desktop) / stacked (mobile) */}
-          <div className="md:flex md:items-center md:justify-between">
-            <StatsBar wpm={40} accuracy={94} time="0:46" />
-            <div className="md:pr-14">
-              <Controls
-                difficulty={difficulty}
-                mode={mode}
-                onDifficultyChange={setDifficulty}
-                onModeChange={setMode}
-              />
+        {testState !== 'complete' && (
+          <main className="flex-1 flex flex-col w-full">
+            {/* Stats + Controls row (desktop) / stacked (mobile) */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 my-2">
+              <div className="flex-1">
+                <StatsBar wpm={40} accuracy={94} time="0:46" />
+              </div>
+              <div className="shrink-0">
+                <Controls
+                  difficulty={difficulty}
+                  mode={mode}
+                  onDifficultyChange={setDifficulty}
+                  onModeChange={setMode}
+                />
+              </div>
             </div>
-          </div>
 
-          <PassageDisplay
-            passage={PLACEHOLDER_PASSAGE}
-            typedChars={[]}
-            cursorIndex={0}
-            testState={testState}
-            onStart={() => setTestState('running')}
-            onRestart={() => setTestState('idle')}
-          />
+            {/* Passage area */}
+            <PassageDisplay
+              passage={PLACEHOLDER_PASSAGE}
+              typedChars={[]}
+              cursorIndex={0}
+              testState={testState}
+              onStart={() => setTestState('running')}
+              onRestart={() => setTestState('idle')}
+            />
 
-          {testState === 'running' && (
-            <RestartButton onRestart={() => setTestState('idle')} />
-          )}
-        </>
-      )}
+            {testState === 'running' && (
+              <RestartButton onRestart={() => setTestState('idle')} />
+            )}
+          </main>
+        )}
 
-      {testState === 'complete' && (
-        <>
-          <Header personalBest={95} />
-          <ResultsScreen
-            resultType="newPB"
-            wpm={95}
-            accuracy={100}
-            correctChars={120}
-            incorrectChars={5}
-            onGoAgain={() => setTestState('idle')}
-          />
-        </>
-      )}
+        {testState === 'complete' && (
+          <main className="flex-1 flex flex-col items-center justify-center w-full">
+            <ResultsScreen
+              resultType="newPB"
+              wpm={95}
+              accuracy={100}
+              correctChars={120}
+              incorrectChars={5}
+              onGoAgain={() => setTestState('idle')}
+            />
+          </main>
+        )}
+      </div>
 
-      {/* Dev shortcut to test results screen */}
-      <div className="fixed bottom-4 right-4 flex gap-2 z-50">
-        <button onClick={() => setTestState('idle')} className="bg-[#333] text-white px-3 py-1 text-xs rounded">idle</button>
-        <button onClick={() => setTestState('running')} className="bg-[#333] text-white px-3 py-1 text-xs rounded">running</button>
-        <button onClick={() => setTestState('complete')} className="bg-[#333] text-white px-3 py-1 text-xs rounded">complete</button>
+      {/* Dev shortcut to test states */}
+      <div className="fixed bottom-4 right-4 flex gap-2 z-50 bg-[#222]/80 backdrop-blur p-1 rounded-lg border border-[#444]">
+        <button onClick={() => setTestState('idle')} className="bg-[#333] hover:bg-[#444] text-white px-3 py-1 text-xs rounded">idle</button>
+        <button onClick={() => setTestState('running')} className="bg-[#333] hover:bg-[#444] text-white px-3 py-1 text-xs rounded">running</button>
+        <button onClick={() => setTestState('complete')} className="bg-[#333] hover:bg-[#444] text-white px-3 py-1 text-xs rounded">complete</button>
       </div>
     </div>
   )
