@@ -1,9 +1,3 @@
-
-# Git worktrees
-.worktrees/
-
 .superpowers/
 
 node_modules/
-dist/
-docs/
