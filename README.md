@@ -2,8 +2,6 @@
 
 A modern, responsive **Typing Speed Test** web application built with **React 19**, **Tailwind CSS v4**, and **Vite**, featuring custom hooks, real-time typing analytics, persistent personal best scores, and responsive layouts matching the Frontend Mentor design and Figma specifications.
 
-![Typing Speed Test Preview](./preview.jpg)
-
 ---
 
 ## 🚀 Live Demo & Repository
