@@ -8,7 +8,7 @@ A modern, responsive **Typing Speed Test** web application built with **React 19
 
 ## 🚀 Live Demo & Repository
 
-- **Live URL:** [https://typing-speed-test-virid-gamma.vercel.app](https://typing-speed-test-virid-gamma.vercel.app)
+- **Live URL:** [typing-speed-test-virid-gamma.vercel.app](https://typing-speed-test-virid-gamma.vercel.app)
 - **Solution URL:** [Frontend Mentor Solution Page]
 
 ---
